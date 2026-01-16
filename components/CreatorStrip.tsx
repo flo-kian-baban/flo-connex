@@ -28,7 +28,7 @@ export default function CreatorStrip() {
                     ))}
 
                     {/* Badge integrated into stack */}
-                    <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-full border-[3px] border-white shadow-sm shrink-0 flex items-center justify-center bg-gray-50 text-xs md:text-sm font-bold text-white hover:scale-110 hover:z-10 transition-transform duration-300 z-10 bg-[#E63F15]">
+                    <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-full border-[3px] border-white shadow-sm shrink-0 flex items-center justify-center bg-[#E63F15]-50 text-xs md:text-sm font-bold text-white hover:scale-110 hover:z-10 transition-transform duration-300 z-10 bg-[#E63F15]">
                         5k+
                     </div>
                 </div>
