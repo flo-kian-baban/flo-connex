@@ -51,7 +51,10 @@ export default function Hero() {
                     </div>
 
                     {/* Button */}
-                    <button className="h-12 md:h-auto px-8 bg-primary hover:bg-primary-hover text-white font-bold rounded-2xl transition-colors shadow-md">
+                    <button
+                        onClick={() => window.location.href = '/auth/signup'}
+                        className="h-12 md:h-auto px-8 bg-primary hover:bg-primary-hover text-white font-bold rounded-2xl transition-colors shadow-md transition-transform active:scale-95"
+                    >
                         Find Offers
                     </button>
                 </div>

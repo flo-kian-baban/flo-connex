@@ -10,6 +10,8 @@
     "deploy": "npx firebase-tools deploy"
   },
   "dependencies": {
+    "@supabase/auth-helpers-nextjs": "^0.15.0",
+    "@supabase/supabase-js": "^2.90.1",
     "firebase": "^12.8.0",
     "lucide-react": "^0.562.0",
     "next": "16.1.2",

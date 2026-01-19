@@ -18,7 +18,7 @@ const config: Config = {
                 },
             },
             fontFamily: {
-                sans: ['var(--font-inter)', 'sans-serif'],
+                sans: ['var(--font-dm-sans)', 'sans-serif'],
             },
             borderRadius: {
                 '3xl': '1.5rem',
@@ -29,9 +29,14 @@ const config: Config = {
                 "0%": { transform: "translateX(0)" },
                 "100%": { transform: "translateX(-100%)" },
             },
+            "toast-in": {
+                "0%": { transform: "translateX(100%)", opacity: "0" },
+                "100%": { transform: "translateX(0)", opacity: "1" },
+            },
         },
         animation: {
             scroll: "scroll 60s linear infinite",
+            "toast-in": "toast-in 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
         },
     },
     plugins: [],

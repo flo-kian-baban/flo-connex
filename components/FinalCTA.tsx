@@ -16,7 +16,13 @@ export default function FinalCTA() {
                     Join the network where your content unlocks exclusive services and experiences.
                 </p>
 
-                <form className="max-w-md mx-auto flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
+                <form
+                    className="max-w-md mx-auto flex flex-col gap-3"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        window.location.href = '/auth/signup';
+                    }}
+                >
                     <div className="relative">
                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
@@ -25,7 +31,10 @@ export default function FinalCTA() {
                             className="w-full pl-12 pr-4 py-4 rounded-full border border-gray-200 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white shadow-sm"
                         />
                     </div>
-                    <button className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 rounded-full transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                    <button
+                        type="submit"
+                        className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-4 rounded-full transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95"
+                    >
                         Apply for Access <ArrowRight size={20} />
                     </button>
                 </form>

@@ -6,7 +6,7 @@ export default function LogoBand() {
     return (
         <section className="py-12 border-y border-gray-50 bg-gray-50/50">
             <div className="max-w-7xl mx-auto px-4 md:px-8 text-center overflow-hidden relative mask-linear-fade">
-                <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-12">
+                <p className="text-sm font-semibold text-gray-500 uppercase tracking-widest mb-16">
                     Top brands hiring on Connex
                 </p>
 

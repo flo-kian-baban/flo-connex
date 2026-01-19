@@ -1,11 +1,11 @@
 // MOCK DATA EXPORTS
 
 // NAVIGATION
+// NAVIGATION
 export const navLinks = [
     { label: "For Creators", href: "/" },
-    { label: "Explore Offers", href: "/" },
-    { label: "Experiences", href: "/" },
-    { label: "Community", href: "/" },
+    { label: "Explore Offers", href: "/auth/signup" },
+    { label: "Login", href: "/auth/login" },
 ];
 
 // CATEGORIES

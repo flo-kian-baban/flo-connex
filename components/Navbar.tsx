@@ -34,8 +34,8 @@ export default function Navbar() {
 
                     {/* Right: CTA */}
                     <Link
-                        href="#cta"
-                        className="bg-primary hover:bg-primary-hover text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all shadow-sm hover:shadow-md"
+                        href="/auth/signup"
+                        className="bg-primary hover:bg-primary-hover text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all shadow-sm hover:shadow-md active:scale-95"
                     >
                         Join as Creator
                     </Link>

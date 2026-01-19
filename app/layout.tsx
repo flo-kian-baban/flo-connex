@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/lib/auth-context";
+import { ToastProvider } from "@/lib/toast-context";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans"
+});
 
 export const metadata: Metadata = {
   title: "Connex | The Marketplace for Creators",
@@ -16,8 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased font-sans`} suppressHydrationWarning>
-        {children}
+      <body className={`${dmSans.variable} antialiased font-sans`} suppressHydrationWarning>
+        <AuthProvider>
+          <ToastProvider >
+            {children}
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );
