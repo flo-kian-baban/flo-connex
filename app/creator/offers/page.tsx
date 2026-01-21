@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import OfferCard from "@/components/marketplace/OfferCard";
-import FilterBar from "@/components/marketplace/FilterBar";
+import OfferCard from "@/components/dashboard/marketplace/OfferCard";
+import FilterBar from "@/components/dashboard/marketplace/FilterBar";
 import { Loader2, Sparkles, Search } from "lucide-react";
 import { GTA_LOCATIONS } from "@/lib/constants";
 

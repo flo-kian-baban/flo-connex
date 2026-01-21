@@ -4,7 +4,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2, Compass, ClipboardCheck, MessageSquare, User } from "lucide-react";
-import DashboardShell, { NavItem } from "@/components/layout/DashboardShell";
+import DashboardShell, { NavItem } from "@/components/dashboard/layout/DashboardShell";
 import { supabase } from "@/lib/supabase";
 
 const CREATOR_NAV_ITEMS: NavItem[] = [

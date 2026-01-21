@@ -1,14 +1,15 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import CategoryDiscovery from "@/components/CategoryDiscovery";
-import FeaturesOrbit from "@/components/FeaturesOrbit";
-import LogoBand from "@/components/LogoBand";
-import HowItWorks from "@/components/HowItWorks";
-import Showcase from "@/components/Showcase";
-import Testimonials from "@/components/Testimonials";
-import FAQ from "@/components/FAQ";
-import FinalCTA from "@/components/FinalCTA";
-import Footer from "@/components/Footer";
+import Navbar from "@/components/landing/Navbar";
+import Hero from "@/components/landing/Hero";
+import CategoryDiscovery from "@/components/landing/CategoryDiscovery";
+import FeaturesOrbit from "@/components/landing/FeaturesOrbit";
+import LogoBand from "@/components/landing/LogoBand";
+import HowItWorks from "@/components/landing/HowItWorks";
+import Showcase from "@/components/landing/Showcase";
+import Testimonials from "@/components/landing/Testimonials";
+import FAQ from "@/components/landing/FAQ";
+import FinalCTA from "@/components/landing/FinalCTA";
+import Footer from "@/components/landing/Footer";
+
 
 export default function Home() {
   return (

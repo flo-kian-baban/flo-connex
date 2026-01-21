@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/lib/toast-context";
 import { Send, Search, User, MoreVertical, Phone, Video, Loader2, MessageSquare, LayoutGrid, FileText, Settings, Compass, ClipboardCheck } from "lucide-react";
 import ProfileImage from "@/components/ui/ProfileImage";
-import DashboardShell, { NavItem } from "@/components/layout/DashboardShell";
+import DashboardShell, { NavItem } from "@/components/dashboard/layout/DashboardShell";
 
 interface Message {
     id: string;

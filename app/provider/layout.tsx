@@ -1,7 +1,7 @@
 "use client";
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
-import DashboardShell, { NavItem } from "@/components/layout/DashboardShell";
+import DashboardShell, { NavItem } from "@/components/dashboard/layout/DashboardShell";
 import { LayoutGrid, FileText, MessageSquare, Settings } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useEffect } from "react";
