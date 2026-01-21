@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { Plus, Edit2, Trash2, Eye, MoreHorizontal, Filter, Search as SearchIcon, Loader2, Image as ImageIcon } from "lucide-react";
+import { Plus, Edit2, Trash2, Eye, MoreHorizontal, Filter, Search as SearchIcon, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/lib/toast-context";
 import ProfileImage from "@/components/ui/ProfileImage";
@@ -126,18 +126,11 @@ export default function ProviderOffersPage() {
                             className="group relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6 rounded-3xl bg-white border border-gray-100 p-6 shadow-sm transition-all hover:shadow-md hover:border-gray-200"
                         >
                             <div className="flex items-center gap-6">
-                                <div className="w-20 h-20 shrink-0 overflow-hidden rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100">
-                                    {(offer.cover_url || offer.image_url) ? (
-                                        <img
-                                            src={offer.cover_url || offer.image_url}
-                                            alt={offer.title}
-                                            className="h-full w-full object-cover transition-transform group-hover:scale-110"
-                                        />
+                                <div className="w-20 h-20 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
+                                    {offer.cover_url ? (
+                                        <img src={offer.cover_url} alt={offer.title} className="h-full w-full object-cover" />
                                     ) : (
-                                        <div className="flex flex-col items-center justify-center text-gray-400">
-                                            <ImageIcon className="h-6 w-6 opacity-20" />
-                                            <span className="text-[8px] font-black uppercase tracking-tighter mt-1 opacity-30">No Image</span>
-                                        </div>
+                                        <div className="h-full w-full flex items-center justify-center bg-gray-50 text-gray-300 font-bold text-[10px] uppercase text-center p-2">No Image</div>
                                     )}
                                 </div>
                                 <div>
@@ -169,11 +162,7 @@ export default function ProviderOffersPage() {
                                     Edit
                                 </Link>
                                 <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        handleDelete(offer.id, offer.cover_url || offer.image_url);
-                                    }}
+                                    onClick={() => handleDelete(offer.id, offer.cover_url)}
                                     disabled={deletingId === offer.id}
                                     className="h-10 w-10 rounded-xl border border-gray-200 text-gray-400 hover:text-red-600 hover:bg-red-50 hover:border-red-100 flex items-center justify-center transition-colors disabled:opacity-50"
                                 >

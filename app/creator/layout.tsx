@@ -2,16 +2,24 @@
 
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
-import CreatorHeader from "@/components/layout/CreatorHeader";
+import { useEffect, useState } from "react";
+import { Loader2, Compass, ClipboardCheck, MessageSquare, User } from "lucide-react";
+import DashboardShell, { NavItem } from "@/components/layout/DashboardShell";
+import { supabase } from "@/lib/supabase";
+
+const CREATOR_NAV_ITEMS: NavItem[] = [
+    { label: "Explore", href: "/creator/offers", icon: Compass },
+    { label: "Applications", href: "/creator/applications", icon: ClipboardCheck },
+    { label: "Chats", href: "/chats", icon: MessageSquare },
+    { label: "Profile", href: "/creator/profile", icon: User },
+];
 
 export default function CreatorLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const { user, loading } = useAuth();
+    const { user, profile, loading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
@@ -22,7 +30,7 @@ export default function CreatorLayout({
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="w-10 h-10 text-primary animate-spin" />
                     <p className="text-gray-400 font-medium italic">Preparing your experience...</p>
@@ -34,11 +42,13 @@ export default function CreatorLayout({
     if (!user) return null;
 
     return (
-        <div className="min-h-screen bg-white">
-            <CreatorHeader />
-            <main className="pt-24 px-6 md:px-10 max-w-7xl mx-auto pb-20">
-                {children}
-            </main>
-        </div>
+        <DashboardShell
+            role="creator"
+            navItems={CREATOR_NAV_ITEMS}
+            profile={profile}
+            userId={user?.id}
+        >
+            {children}
+        </DashboardShell>
     );
 }

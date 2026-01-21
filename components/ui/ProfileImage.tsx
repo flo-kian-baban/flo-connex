@@ -26,7 +26,7 @@ export default function ProfileImage({
         xl: "w-20 h-20 text-lg",
     };
 
-    const shapeClasses = type === "creator" ? "rounded-full" : "rounded-xl";
+    const shapeClasses = "rounded-full";
 
     const getInitials = (n: string) => {
         return n

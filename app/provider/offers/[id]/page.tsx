@@ -265,7 +265,7 @@ export default function OfferFormPage() {
     }
 
     return (
-        <div className="mx-auto max-w-2xl px-4 py-12 md:px-0">
+        <div className="mx-auto max-w-5xl px-4 py-6 md:px-0">
             {/* Nav & Header */}
             <div className="mb-10">
                 <Link

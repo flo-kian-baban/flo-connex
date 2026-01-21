@@ -7,11 +7,13 @@ import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/lib/toast-context";
 import { GTA_LOCATIONS } from "@/lib/constants";
 import MultiSelect from "@/components/ui/MultiSelect";
-import { Trash2, Save, Loader2, Globe, Instagram, Mail, Phone, MapPin, ListChecks, Building2, ShieldCheck, Trophy, Target, Calendar, Hash, X, Plus, Image as ImageIcon, Check, ChevronDown, Camera, Award, Star, CheckCircle2 } from "lucide-react";
+import { Trash2, Save, Loader2, Globe, Instagram, Mail, Phone, MapPin, ListChecks, Building2, ShieldCheck, Trophy, Target, Calendar, Hash, X, Plus, Image as ImageIcon, Check, ChevronDown, Camera, Award, Star, CheckCircle2, Tag } from "lucide-react";
+import IndustrySelect from "@/components/ui/IndustrySelect";
 
 interface ProviderProfile {
     id: string;
     business_name: string;
+    category: string | null;
     tagline: string | null;
     brand_description: string | null;
     address: string | null;
@@ -41,6 +43,7 @@ export default function ProviderSettingsPage() {
     const [formData, setFormData] = useState<ProviderProfile>({
         id: "",
         business_name: "",
+        category: "",
         tagline: "",
         brand_description: "",
         address: "",
@@ -82,6 +85,7 @@ export default function ProviderSettingsPage() {
                     setFormData({
                         id: data.id,
                         business_name: data.business_name || "",
+                        category: data.category || "",
                         tagline: data.tagline || "",
                         brand_description: data.brand_description || "",
                         address: data.address || "",
@@ -183,6 +187,7 @@ export default function ProviderSettingsPage() {
 
             const updatePayload = {
                 business_name: formData.business_name,
+                category: formData.category,
                 tagline: formData.tagline,
                 brand_description: formData.brand_description,
                 address: formData.address,
@@ -215,7 +220,6 @@ export default function ProviderSettingsPage() {
                     .insert({
                         ...updatePayload,
                         claimed_by_user_id: user.id,
-                        category: "Lifestyle" // Default for new profiles
                     })
                     .select()
                     .single();
@@ -292,7 +296,7 @@ export default function ProviderSettingsPage() {
     }
 
     return (
-        <div className="mx-auto max-w-2xl px-4 py-12 md:px-0">
+        <div className="mx-auto max-w-5xl px-4 py-6 md:px-0">
             <div className="mb-8 flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-black text-gray-900">Provider Profile</h1>
@@ -325,12 +329,12 @@ export default function ProviderSettingsPage() {
                     <div className="space-y-6">
                         <div className="flex items-center gap-8">
                             <div className="relative h-24 w-24 flex-shrink-0">
-                                <div className="h-full w-full overflow-hidden rounded-3xl border-2 border-gray-50 bg-gray-50 shadow-inner">
+                                <div className="h-full w-full rounded-full overflow-hidden rounded-3xl border-2 border-gray-50 bg-gray-50 shadow-inner">
                                     {formData.logo_url ? (
                                         <img
                                             src={formData.logo_url}
                                             alt="Business Logo"
-                                            className="h-full w-full object-cover"
+                                            className="h-full w-full object-cover rounded-full"
                                         />
                                     ) : (
                                         <div className="flex h-full w-full items-center justify-center text-gray-200">
@@ -340,7 +344,7 @@ export default function ProviderSettingsPage() {
                                 </div>
                                 <label
                                     htmlFor="logo-upload"
-                                    className={`absolute -bottom-2 -right-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-2xl bg-white shadow-xl transition-transform hover:scale-110 active:scale-95 ${uploadingLogo ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    className={`absolute -bottom-2 -right-1 flex h-10 w-10 cursor-pointer rounded-full items-center justify-center rounded-2xl bg-white shadow-xl transition-transform hover:scale-110 active:scale-95 ${uploadingLogo ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     {uploadingLogo ? (
                                         <Loader2 className="h-5 w-5 animate-spin text-[#FF4D22]" />
@@ -385,6 +389,13 @@ export default function ProviderSettingsPage() {
                                     onChange={handleInputChange}
                                     placeholder="e.g. Luxury Skincare in Toronto"
                                     className="w-full rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-900 outline-none transition-all focus:border-[#FF4D22]/20 focus:bg-white focus:ring-4 focus:ring-[#FF4D22]/5"
+                                />
+                            </div>
+                            <div className="col-span-full space-y-1.5">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Industry (Category) *</label>
+                                <IndustrySelect
+                                    value={formData.category}
+                                    onChange={(val) => setFormData(prev => ({ ...prev, category: val }))}
                                 />
                             </div>
                         </div>

@@ -33,7 +33,7 @@ export default function FilterBar({
     const hasActiveFilters = search || category || locationArea || exchangeType;
 
     return (
-        <div className="space-y-4 mt-6">
+        <div className="space-y-4 mt-0">
             <div className="flex flex-col lg:flex-row gap-4">
                 {/* Search */}
                 <div className="flex-1 relative">

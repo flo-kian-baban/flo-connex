@@ -115,9 +115,10 @@ export default function OfferDetailPage() {
 
             if (error) throw error;
             setApplied(true);
+            showToast("Application submitted successfully!", "success");
         } catch (err) {
             console.error("Error applying:", err);
-            alert("Failed to apply. Please try again.");
+            showToast("Failed to apply. Please try again.", "error");
         } finally {
             setApplying(false);
         }

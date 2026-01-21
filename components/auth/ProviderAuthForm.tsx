@@ -39,6 +39,7 @@ export default function ProviderAuthForm({ type }: ProviderAuthFormProps) {
                 if (signUpError) throw signUpError;
 
                 if (data.session) {
+                    showToast("Welcome to Connex!", "success");
                     router.push("/provider/offers");
                 } else {
                     showToast("Check your email for the confirmation link.", "info");
@@ -57,11 +58,20 @@ export default function ProviderAuthForm({ type }: ProviderAuthFormProps) {
                     throw new Error("This account is registered as a Creator. Please use the Creator login.");
                 }
 
+                showToast("Welcome back!", "success");
                 router.push("/provider/offers");
             }
         } catch (err: any) {
             console.error("Auth error:", err);
-            showToast(err.message || "An authentication error occurred.", "error");
+            // Handle "User already registered" error
+            if (err.message === "User already registered") {
+                showToast("Account already exists. Redirecting to login...", "info");
+                setTimeout(() => {
+                    router.push("/auth/provider/login");
+                }, 2000);
+            } else {
+                showToast(err.message || "An authentication error occurred.", "error");
+            }
         } finally {
             setIsLoading(false);
         }

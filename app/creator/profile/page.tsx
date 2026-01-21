@@ -152,7 +152,10 @@ export default function ProfilePage() {
                     router.push(url.pathname + url.search);
                 }, 1500);
             } else {
-                showToast("Profile updated successfully! You're now ready for the marketplace.", "success");
+                showToast("Profile updated! Refreshing workspace...", "success");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             }
         } catch (err: any) {
             showToast(err.message, "error");

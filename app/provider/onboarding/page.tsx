@@ -64,7 +64,11 @@ export default function ProviderOnboardingPage() {
                 });
 
             if (error) throw error;
-            router.push("/provider/offers");
+
+            showToast("Profile created! Setting up your workspace...", "success");
+            setTimeout(() => {
+                window.location.href = "/provider/offers";
+            }, 1000);
         } catch (error: any) {
             console.error("Error creating profile:", error);
             showToast("Failed to create profile. Please try again.", "error");

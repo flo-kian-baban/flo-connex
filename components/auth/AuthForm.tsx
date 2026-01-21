@@ -31,11 +31,15 @@ export default function AuthForm({ type }: AuthFormProps) {
                     password,
                     options: {
                         emailRedirectTo: `${window.location.origin}/auth/callback`,
+                        data: {
+                            role: 'creator'
+                        }
                     },
                 });
                 if (signUpError) throw signUpError;
 
                 if (data.session) {
+                    showToast("Welcome to Connex!", "success");
                     router.push("/creator/offers");
                 } else {
                     showToast("Check your email for the confirmation link.", "info");
@@ -46,11 +50,20 @@ export default function AuthForm({ type }: AuthFormProps) {
                     password,
                 });
                 if (signInError) throw signInError;
+                showToast("Welcome back!", "success");
                 router.push("/creator/offers");
             }
         } catch (err: any) {
             console.error("Auth error:", err);
-            showToast(err.message || "An authentication error occurred.", "error");
+            // Handle "User already registered" error
+            if (err.message === "User already registered") {
+                showToast("Account already exists. Redirecting to login...", "info");
+                setTimeout(() => {
+                    router.push("/auth/login");
+                }, 2000);
+            } else {
+                showToast(err.message || "An authentication error occurred.", "error");
+            }
         } finally {
             setIsLoading(false);
         }

@@ -28,7 +28,7 @@ export function Toast({ message, type = 'success', onClose }: ToastProps) {
 
     return (
         <div
-            className={`flex items-start gap-3 p-4 rounded-2xl border shadow-xl backdrop-blur-md animate-toast-in w-full max-w-[400px] ${styles[type]}`}
+            className={`flex items-start gap-3 p-4 rounded-2xl border shadow-2xl backdrop-blur-xl animate-toast-in w-full max-w-[400px] ${styles[type]}`}
         >
             <Icon className="w-6 h-6 shrink-0" />
 
