@@ -226,4 +226,65 @@ export const LANGUAGES = [
     "Zulu"
 ] as const;
 
+
 export type Language = typeof LANGUAGES[number];
+
+export const PLATFORMS = [
+    "Instagram",
+    "TikTok",
+    "YouTube",
+    "YouTube Shorts",
+    "Other"
+] as const;
+
+export type Platform = typeof PLATFORMS[number];
+
+export const CONTENT_FORMATS = [
+    "Short-form video",
+    "Long-form video",
+    "Mixed"
+] as const;
+
+export type ContentFormat = typeof CONTENT_FORMATS[number];
+
+export const AUDIENCE_AGES = [
+    "18–24",
+    "25–34",
+    "35–44",
+    "45+"
+] as const;
+
+export type AudienceAge = typeof AUDIENCE_AGES[number];
+
+export const GENDER_SKEWS = [
+    "Mostly Male",
+    "Mostly Female",
+    "Mixed"
+] as const;
+
+export type GenderSkew = typeof GENDER_SKEWS[number];
+
+export const DELIVERY_SPEEDS = [
+    "Same day",
+    "1–3 days",
+    "3–7 days"
+] as const;
+
+export type DeliverySpeed = typeof DELIVERY_SPEEDS[number];
+
+export const PRODUCTION_STYLES = [
+    "Raw/Authentic",
+    "Polished/Cinematic",
+    "Educational/Scripted"
+] as const;
+
+export type ProductionStyle = typeof PRODUCTION_STYLES[number];
+
+export const AUDIENCE_FOCUS_OPTIONS = [
+    "Mostly GTA",
+    "Mostly Canada",
+    "International",
+    "Mixed"
+] as const;;
+
+export type AudienceFocus = typeof AUDIENCE_FOCUS_OPTIONS[number];

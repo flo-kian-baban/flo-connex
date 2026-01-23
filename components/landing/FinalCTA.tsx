@@ -4,14 +4,14 @@ import { ArrowRight, Mail } from "lucide-react";
 
 export default function FinalCTA() {
     return (
-        <section id="cta" className="py-20 px-4 md:px-8">
+        <section id="cta" className="py-16 md:py-20 px-4 md:px-8">
             <div className="max-w-7xl mx-auto bg-gradient-to-br from-[#FFEDEA] to-white rounded-[2.5rem] p-8 md:p-20 text-center relative overflow-hidden border border-primary/20">
 
                 {/* Decorative background blobs */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-200/20 rounded-full blur-3xl -z-10" />
 
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Ready to upgrade your lifestyle?</h2>
+                <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">Ready to upgrade your lifestyle?</h2>
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
                     Join the network where your content unlocks exclusive services and experiences.
                 </p>

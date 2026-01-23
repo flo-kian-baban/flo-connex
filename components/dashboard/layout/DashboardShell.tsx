@@ -209,7 +209,7 @@ export default function DashboardShell({
             {/* Main Content Area */}
             <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${isCollapsed ? "md:ml-[4.5rem]" : "md:ml-24 lg:md:ml-72"}`}>
                 {/* Header */}
-                <header className="sticky top-4 z-40  px-4 md:px-8 h-24 flex items-center justify-between">
+                <header className="sticky top-0 md:top-4 z-40 px-3 md:px-8 h-18 md:h-24 flex items-center justify-between transition-all">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setIsMobileMenuOpen(true)}
@@ -221,7 +221,7 @@ export default function DashboardShell({
                         {/* Page Titles could go here based on path if needed later */}
                     </div>
 
-                    <div className="flex items-center gap-4 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         {/* Notifications */}
                         {userId && <NotificationDropdown userId={userId} />}
 
@@ -229,14 +229,14 @@ export default function DashboardShell({
                         <div className="relative">
                             <button
                                 onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                                className="flex items-center gap-4 pr-5 pl-3 py-2 py-2 rounded-full bg-white border border-gray-100 hover:bg-gray-50 shadow-sm transition-all duration-200 group"
+                                className="flex items-center gap-2 sm:gap-4 pr-3 sm:pr-5 pl-2 sm:pl-3 py-1.5 sm:py-2 rounded-full bg-white border border-gray-100 hover:bg-gray-50 shadow-sm transition-all duration-200 group"
                             >
                                 <ProfileImage
                                     src={displayProfile?.image}
                                     name={displayProfile?.name || displayProfile?.email}
                                     type={role}
                                     size="lg"
-                                    className="mr-1 w-14 h-14 rounded-full"
+                                    className="mr-0.5 w-10 h-10 sm:w-14 sm:h-14 rounded-full"
                                 />
                                 <div className="hidden sm:block text-left mt-1 mr-12">
                                     <p className="text-m font-bold text-gray-900 leading-none group-hover:text-primary transition-colors">{displayProfile?.name || "User"}</p>

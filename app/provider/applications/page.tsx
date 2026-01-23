@@ -14,6 +14,8 @@ interface Application {
     id: string;
     status: string;
     created_at: string;
+    initiator: 'creator' | 'provider';
+    request_details: any;
     submitted_post_urls: string[] | null;
     submitted_deliverables: {
         label: string;
@@ -21,8 +23,11 @@ interface Application {
         storage_path?: string;
         type?: 'video' | 'image'
     }[] | null;
-    offer: {
+    offer?: {
         title: string;
+        provider_id: string;
+        cover_url?: string;
+        image_url?: string;
     };
     creator: {
         display_name: string;
@@ -65,23 +70,25 @@ export default function ProviderApplicationsPage() {
                     .select(`
                         id,
                         status,
+                        initiator,
                         created_at,
+                        request_details,
                         submitted_post_urls,
                         submitted_deliverables,
-                        offer:offers!inner(title, provider_id, cover_url, image_url),
+                        offer:offers(title, provider_id, cover_url, image_url),
                         creator:creator_profiles!inner(display_name, email, primary_platform, follower_range, avg_views_range, engagement_range, location_area, niches, avatar_url)`
                     )
-                    .eq("offer.provider_id", provider.id)
+                    .eq("provider_id", provider.id) // Query by provider_id on applications table directly
                     .order("created_at", { ascending: false });
 
                 if (error) throw error;
                 const apps = data as any || [];
                 setApplications(apps);
 
-                // Initialize all offers as expanded by default
-                const offerTitles = Array.from(new Set(apps.map((a: any) => a.offer.title)));
+                // Initialize all groups as expanded by default
+                const groupTitles = Array.from(new Set(apps.map((a: any) => a.offer?.title || a.request_details?.title || "Direct Requests")));
                 const initialExpanded: Record<string, boolean> = {};
-                offerTitles.forEach(title => {
+                groupTitles.forEach(title => {
                     initialExpanded[title as string] = true;
                 });
                 setExpandedOffers(initialExpanded);
@@ -94,9 +101,9 @@ export default function ProviderApplicationsPage() {
         }
     };
 
-    // Group applications by offer title
+    // Group applications by offer title or request title
     const groupedApps = applications.reduce((acc, app) => {
-        const title = app.offer.title;
+        const title = app.offer?.title || app.request_details?.title || "Direct Requests";
         if (!acc[title]) acc[title] = [];
         acc[title].push(app);
         return acc;
@@ -154,7 +161,9 @@ export default function ProviderApplicationsPage() {
     return (
         <div className="space-y-8">
             {loading ? (
-                <div className="py-20 text-center flex justify-center"><Loader2 className="animate-spin text-primary" /></div>
+                <div className="py-20 text-center flex justify-center">
+                    <Loader2 className="animate-spin text-primary" />
+                </div>
             ) : applications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-[2.5rem] bg-white border border-gray-100 p-12 text-center shadow-sm">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">No applications yet</h3>
@@ -165,15 +174,11 @@ export default function ProviderApplicationsPage() {
             ) : (
                 <div className="space-y-6">
                     {Object.entries(groupedApps).map(([title, apps]) => {
-                        // Extract cover image from the first app in the group (same offer)
-                        // Casting to 'any' here as the Application interface might not fully reflect the deep partial join, 
-                        // but we queried for it. Safest is to just access it.
                         const firstApp = apps[0] as any;
-                        const coverImage = firstApp.offer.cover_url || firstApp.offer.image_url;
+                        const coverImage = firstApp.offer?.cover_url || firstApp.offer?.image_url;
 
                         return (
                             <div key={title} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
-                                {/* Offer Header Section (Unified with list) */}
                                 <button
                                     onClick={() => toggleOffer(title)}
                                     className="w-full flex items-center justify-between p-6 hover:bg-gray-50/30 transition-all group text-left"
@@ -204,14 +209,11 @@ export default function ProviderApplicationsPage() {
                                     </div>
                                 </button>
 
-                                {/* Section Content - Premium Height Animation */}
                                 <div className={`grid transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedOffers[title] ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                                     <div className="overflow-hidden">
                                         <div className="p-6 pt-0">
                                             <div className="h-px bg-gray-100/60 mb-8" />
-
                                             <div className="space-y-3">
-                                                {/* Refined Header Row - 12-col grid for separate metrics */}
                                                 <div className="hidden lg:grid grid-cols-12 gap-x-4 px-4 pb-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                                     <div className="col-span-1"></div>
                                                     <div className="col-span-2">Creator</div>
@@ -227,139 +229,130 @@ export default function ProviderApplicationsPage() {
                                                     <div key={app.id} className="relative">
                                                         <div className={`group/row relative z-10 bg-gray-50 transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] overflow-hidden ${expandedAppId === app.id
                                                             ? 'border-0 rounded-t-[2rem]'
-                                                            : 'border-transparent hover:border-gray-200  hover:bg-gray-100 rounded-[2.5rem] bg-gray-50/60 mb-3 hover:-translate-y-0.5'
+                                                            : 'border-transparent hover:border-gray-200 hover:bg-gray-100 rounded-[2.5rem] bg-gray-50/60 mb-3 hover:-translate-y-0.5'
                                                             }`}>
-                                                            <div className="grid grid-cols-12 gap-x-6 items-center p-6 sm:px-4 py-3">
-                                                                {/* 1. Avatar */}
-                                                                <div className="col-span-1 flex justify-center">
-                                                                    <ProfileImage
-                                                                        src={app.creator.avatar_url}
-                                                                        name={app.creator.display_name}
-                                                                        type="creator"
-                                                                        className="w-14 h-14 ring-2 ring-white shadow-sm"
-                                                                    />
-                                                                </div>
-
-                                                                {/* 2. Name */}
-                                                                <div className="col-span-2 min-w-0">
-                                                                    <p className="text-sm font-bold text-gray-900 truncate" title={app.creator.display_name}>{app.creator.display_name}</p>
-                                                                    <div className="flex items-center gap-1.5 mt-0.5">
-                                                                        <div className="w-3 h-3 rounded-full bg-gray-100 flex items-center justify-center shrink-0 text-gray-400 grayscale">
-                                                                            {getPlatformIcon(app.creator.primary_platform)}
+                                                            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-x-6 items-center p-4 lg:p-6 lg:px-4 py-3">
+                                                                <div className="flex items-center w-full lg:col-span-3 gap-4">
+                                                                    <div className="shrink-0 flex justify-center">
+                                                                        <ProfileImage
+                                                                            src={app.creator.avatar_url}
+                                                                            name={app.creator.display_name}
+                                                                            type="creator"
+                                                                            className="w-12 h-12 lg:w-14 lg:h-14 ring-2 ring-white shadow-sm"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="min-w-0 flex-1">
+                                                                        <p className="text-sm font-bold text-gray-900 truncate" title={app.creator.display_name}>{app.creator.display_name}</p>
+                                                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                                                            <div className="w-3 h-3 rounded-full bg-gray-100 flex items-center justify-center shrink-0 text-gray-400 grayscale">
+                                                                                {getPlatformIcon(app.creator.primary_platform)}
+                                                                            </div>
+                                                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{app.creator.primary_platform}</span>
                                                                         </div>
-                                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{app.creator.primary_platform}</span>
                                                                     </div>
                                                                 </div>
 
-                                                                {/* 3. Followers */}
-                                                                <div className="col-span-1 flex flex-col items-center">
-                                                                    <span className="text-sm font-black text-gray-900">{app.creator.follower_range}</span>
-                                                                    <span className="text-[8px] font-black text-gray-300 uppercase tracking-tighter">Followers</span>
+                                                                <div className="grid grid-cols-3 w-full lg:contents gap-2 py-2 lg:py-0 border-y border-gray-100/50 lg:border-0">
+                                                                    <div className="flex flex-col items-center lg:col-span-1">
+                                                                        <span className="text-xs lg:text-sm font-black text-gray-900">{app.creator.follower_range}</span>
+                                                                        <span className="text-[8px] font-black text-gray-300 uppercase tracking-tighter">Followers</span>
+                                                                    </div>
+                                                                    <div className="flex flex-col items-center lg:col-span-1">
+                                                                        <span className="text-xs lg:text-sm font-black text-gray-900">{app.creator.avg_views_range || "N/A"}</span>
+                                                                        <span className="text-[8px] font-black text-gray-300 uppercase tracking-tighter">Avg Views</span>
+                                                                    </div>
+                                                                    <div className="flex flex-col items-center lg:col-span-1">
+                                                                        <span className="text-xs lg:text-sm font-black text-primary">{app.creator.engagement_range || "0%"}</span>
+                                                                        <span className="text-[8px] font-black text-gray-300 uppercase tracking-tighter">Eng.</span>
+                                                                    </div>
                                                                 </div>
 
-                                                                {/* 4. Avg Views */}
-                                                                <div className="col-span-1 flex flex-col items-center">
-                                                                    <span className="text-sm font-black text-gray-900">{app.creator.avg_views_range || "N/A"}</span>
-                                                                    <span className="text-[8px] font-black text-gray-300 uppercase tracking-tighter">Avg Views</span>
-                                                                </div>
+                                                                <div className="flex flex-wrap items-center justify-between w-full lg:contents gap-4">
+                                                                    <div className="lg:col-span-2 flex justify-center">
+                                                                        {app.submitted_deliverables?.length || app.submitted_post_urls?.length ? (
+                                                                            <button
+                                                                                onClick={() => toggleApplicationExpansion(app.id)}
+                                                                                className={`inline-flex items-center gap-1.5 text-[10px] px-4 py-2 rounded-full font-black transition-all shadow-sm border ${expandedAppId === app.id
+                                                                                    ? 'bg-primary text-white border-primary scale-105'
+                                                                                    : 'bg-white border-gray-100 text-primary hover:bg-primary/5'
+                                                                                    }`}
+                                                                            >
+                                                                                {expandedAppId === app.id ? (
+                                                                                    <><X className="w-3 h-3" />CLOSE</>
+                                                                                ) : (
+                                                                                    <><Play className="w-3 h-3 fill-current" />{(app.submitted_deliverables?.length || app.submitted_post_urls?.length || 0) > 1 ? `REVIEW ${app.submitted_deliverables?.length || app.submitted_post_urls?.length} LINKS` : 'REVIEW'}</>
+                                                                                )}
+                                                                            </button>
+                                                                        ) : (
+                                                                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] italic">Pending...</span>
+                                                                        )}
+                                                                    </div>
 
-                                                                {/* 5. Engagement */}
-                                                                <div className="col-span-1 flex flex-col items-center">
-                                                                    <span className="text-sm font-black text-primary">{app.creator.engagement_range || "0%"}</span>
-                                                                    <span className="text-[8px] font-black text-gray-300 uppercase tracking-tighter">Eng.</span>
-                                                                </div>
+                                                                    <div className="lg:col-span-2 flex justify-center">
+                                                                        <div className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.15em] flex items-center gap-2 border shadow-sm transition-all duration-300
+                                                                        ${app.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                                                                app.status === 'in_progress' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                                                                                    app.status === 'completed' ? 'bg-primary/5 text-primary border-primary/10' :
+                                                                                        app.status === 'pending' ? 'bg-gray-50 text-gray-500 border-gray-100' :
+                                                                                            'bg-red-50 text-red-500 border-red-100'}
+                                                                    `}>
+                                                                            {app.status === 'accepted' ? <CheckCircle2 className="w-3 h-3" /> :
+                                                                                app.status === 'in_progress' ? <Loader2 className="w-3 h-3 animate-spin" /> :
+                                                                                    app.status === 'completed' ? <CheckCircle2 className="w-3 h-3" /> :
+                                                                                        app.status === 'pending' ? <Clock className="w-3 h-3" /> :
+                                                                                            <XCircle className="w-3 h-3" />}
+                                                                            {app.status === 'in_progress' ? 'In Progress' : app.status}
+                                                                        </div>
+                                                                    </div>
 
-                                                                {/* 6. Proof of Work */}
-                                                                <div className="col-span-2 flex justify-center px-2">
-                                                                    {app.submitted_deliverables?.length || app.submitted_post_urls?.length ? (
-                                                                        <button
-                                                                            onClick={() => toggleApplicationExpansion(app.id)}
-                                                                            className={`inline-flex items-center gap-1.5 text-[10px] px-4 py-2 rounded-full font-black transition-all shadow-sm border ${expandedAppId === app.id
-                                                                                ? 'bg-primary text-white border-primary scale-105'
-                                                                                : 'bg-white border-gray-100 text-primary hover:bg-primary/5'
-                                                                                }`}
-                                                                        >
-                                                                            {expandedAppId === app.id ? (
-                                                                                <>
-                                                                                    <X className="w-3 h-3" />
-                                                                                    CLOSE REVIEW
-                                                                                </>
+                                                                    <div className="lg:col-span-2 flex items-center justify-end gap-2">
+                                                                        {app.status === 'pending' ? (
+                                                                            app.initiator === 'provider' ? (
+                                                                                <div className="flex items-center gap-1.5">
+                                                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic">Waiting for Creator</span>
+                                                                                </div>
                                                                             ) : (
-                                                                                <>
-                                                                                    <Play className="w-3 h-3 fill-current" />
-                                                                                    {(app.submitted_deliverables?.length || app.submitted_post_urls?.length || 0) > 1
-                                                                                        ? `REVIEW ${app.submitted_deliverables?.length || app.submitted_post_urls?.length} LINKS`
-                                                                                        : 'REVIEW SUBMISSION'}
-                                                                                </>
-                                                                            )}
-                                                                        </button>
-                                                                    ) : (
-                                                                        <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] italic">
-                                                                            Pending...
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-
-                                                                {/* 7. Status */}
-                                                                <div className="col-span-2 flex justify-center">
-                                                                    <div className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.15em] flex items-center gap-2 border shadow-sm transition-all duration-300
-                                                                    ${app.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                                            app.status === 'in_progress' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                                                                                app.status === 'completed' ? 'bg-primary/5 text-primary border-primary/10' :
-                                                                                    app.status === 'pending' ? 'bg-gray-50 text-gray-500 border-gray-100' :
-                                                                                        'bg-red-50 text-red-500 border-red-100'}
-                                                                `}>
-                                                                        {app.status === 'accepted' ? <CheckCircle2 className="w-3 h-3" /> :
-                                                                            app.status === 'in_progress' ? <Loader2 className="w-3 h-3 animate-spin" /> :
-                                                                                app.status === 'completed' ? <CheckCircle2 className="w-3 h-3" /> :
-                                                                                    app.status === 'pending' ? <Clock className="w-3 h-3" /> :
-                                                                                        <XCircle className="w-3 h-3" />}
-                                                                        {app.status === 'in_progress' ? 'In Progress' : app.status}
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* 8. Actions */}
-                                                                <div className="col-span-2 flex items-center justify-end gap-2 pr-2">
-                                                                    {app.status === 'pending' ? (
-                                                                        <div className="flex items-center gap-1.5">
-                                                                            <button
-                                                                                onClick={() => updateStatus(app.id, 'rejected')}
-                                                                                className="w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500 hover:border-red-200 hover:-translate-y-1 flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
-                                                                                title="Decline"
-                                                                            >
-                                                                                <XCircle className="w-5 h-5" />
-                                                                            </button>
-                                                                            <button
-                                                                                onClick={() => updateStatus(app.id, 'in_progress')}
-                                                                                className="h-9 px-4 rounded-full bg-gray-900 text-white hover:bg-primary hover:-translate-y-0.5 text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-md active:translate-y-0 active:scale-95"
-                                                                            >
-                                                                                Accept
-                                                                            </button>
-                                                                        </div>
-                                                                    ) : app.status === 'completed' || app.status === 'in_progress' ? (
-                                                                        <div className="flex items-center gap-1.5">
-                                                                            <Link
-                                                                                href={`/chats?applicationId=${app.id}`}
-                                                                                className="w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-400 hover:bg-primary/5 hover:text-primary hover:border-primary/20 hover:-translate-y-1 flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
-                                                                                title="Message"
-                                                                            >
-                                                                                <MessageSquare className="w-4 h-4" />
-                                                                            </Link>
-                                                                            {app.status === 'completed' && (
-                                                                                <button
-                                                                                    onClick={() => updateStatus(app.id, 'accepted')}
-                                                                                    className="h-9 px-4 rounded-full bg-gray-900 text-white hover:bg-primary hover:-translate-y-0.5 text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-md active:translate-y-0 active:scale-95"
-                                                                                    title="Approve"
+                                                                                <div className="flex items-center gap-1.5">
+                                                                                    <button
+                                                                                        onClick={() => updateStatus(app.id, 'rejected')}
+                                                                                        className="w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500 hover:border-red-200 hover:-translate-y-1 flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
+                                                                                        title="Decline"
+                                                                                    >
+                                                                                        <XCircle className="w-5 h-5" />
+                                                                                    </button>
+                                                                                    <button
+                                                                                        onClick={() => updateStatus(app.id, 'in_progress')}
+                                                                                        className="h-9 px-4 rounded-full bg-gray-900 text-white hover:bg-primary hover:-translate-y-0.5 text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-md active:translate-y-0 active:scale-95"
+                                                                                    >
+                                                                                        Accept
+                                                                                    </button>
+                                                                                </div>
+                                                                            )
+                                                                        ) : app.status === 'completed' || app.status === 'in_progress' ? (
+                                                                            <div className="flex items-center gap-1.5">
+                                                                                <Link
+                                                                                    href={`/chats?applicationId=${app.id}`}
+                                                                                    className="w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-400 hover:bg-primary/5 hover:text-primary hover:border-primary/20 hover:-translate-y-1 flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
+                                                                                    title="Message"
                                                                                 >
-                                                                                    Approve
-                                                                                </button>
-                                                                            )}
-                                                                        </div>
-                                                                    ) : (
-                                                                        <button disabled className="w-9 h-9 rounded-full border border-gray-50 text-gray-200 flex items-center justify-center cursor-not-allowed bg-gray-50/50">
-                                                                            <MoreVertical className="w-4 h-4 text-transparent" />
-                                                                        </button>
-                                                                    )}
+                                                                                    <MessageSquare className="w-4 h-4" />
+                                                                                </Link>
+                                                                                {app.status === 'completed' && (
+                                                                                    <button
+                                                                                        onClick={() => updateStatus(app.id, 'accepted')}
+                                                                                        className="h-9 px-4 rounded-full bg-gray-900 text-white hover:bg-primary hover:-translate-y-0.5 text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-md active:translate-y-0 active:scale-95"
+                                                                                        title="Approve"
+                                                                                    >
+                                                                                        Approve
+                                                                                    </button>
+                                                                                )}
+                                                                            </div>
+                                                                        ) : (
+                                                                            <button disabled className="w-9 h-9 rounded-full border border-gray-50 text-gray-200 flex items-center justify-center cursor-not-allowed bg-gray-50/50">
+                                                                                <MoreVertical className="w-4 h-4 text-transparent" />
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -368,49 +361,10 @@ export default function ProviderApplicationsPage() {
                                                         <div className={`grid transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${expandedAppId === app.id ? 'grid-rows-[1fr] opacity-100 mb-6' : 'grid-rows-[0fr] opacity-0 pointer-events-none'}`}>
                                                             <div className="overflow-hidden">
                                                                 <div className="bg-gray-50 rounded-b-[2.5rem] border-primary/20 p-10 sm:px-16 sm:pb-12 pt-7 space-y-16 relative">
-                                                                    {/* Premium Header Section
-                                                                    <div className="flex flex-col sm:flex-row items-center justify-between border-b border-gray-100 pb-7 gap-6">
-                                                                        <div className="space-y-1">
-                                                                            <div className="flex items-center gap-2.5">
-                                                                                <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(255,77,34,0.4)]" />
-                                                                                <h3 className="text-[10px] font-black text-primary/60 uppercase tracking-[0.3em]">Reviewing Submission</h3>
-                                                                            </div>
-                                                                            <p className="text-3xl font-black text-gray-900 tracking-tight">
-                                                                                {app.creator.display_name}’s Deliverables
-                                                                            </p>
-                                                                        </div>
-
-                                                                        <div className="flex items-center gap-3 w-full sm:w-auto">
-                                                                            <Link
-                                                                                href={`/chats?applicationId=${app.id}`}
-                                                                                className="flex-1 sm:flex-none justify-center flex items-center gap-2 px-6 py-3 bg-white text-gray-600 border border-gray-200 font-bold text-[11px] uppercase tracking-widest rounded-full hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all shadow-sm hover:shadow group"
-                                                                            >
-                                                                                <MessageSquare className="w-3.5 h-3.5 group-hover:scale-110 transition-transform text-gray-400 group-hover:text-gray-600" />
-                                                                                Feedback
-                                                                            </Link>
-                                                                            <button
-                                                                                onClick={() => {
-                                                                                    updateStatus(app.id, 'accepted');
-                                                                                    setExpandedAppId(null);
-                                                                                }}
-                                                                                className="flex-1 sm:flex-none justify-center flex items-center gap-2 px-8 py-3 bg-[#FF4D22] text-white font-black text-[11px] uppercase tracking-widest rounded-full shadow-[0_10px_20px_-5px_rgba(255,77,34,0.3)] hover:shadow-[0_15px_30px_-5px_rgba(255,77,34,0.4)] hover:-translate-y-0.5 transition-all active:translate-y-0 active:scale-95 group"
-                                                                            >
-                                                                                <Check className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-                                                                                Approve All
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
- */}
-                                                                    {/* Deliverables Grid */}
-                                                                    {/* <div className={`grid gap-12 ${((app.submitted_deliverables?.length || 0) + (app.submitted_post_urls?.length || 0)) > 1
-                                                                        ? 'grid-cols-1 md:grid-cols-2'
-                                                                        : 'grid-cols-1 max-w-2xl mx-auto'
-                                                                        }`}> */}
-                                                                    <div className={"flex flex-row gap-14"}>
+                                                                    <div className="flex flex-col sm:flex-row flex-wrap gap-8 lg:gap-14">
                                                                         {app.submitted_deliverables ? (
                                                                             app.submitted_deliverables.map((item, i) => (
                                                                                 <div key={i} className="group/item flex flex-col items-start space-y-6">
-                                                                                    {/* Item Header */}
                                                                                     <div className="flex items-center justify-between">
                                                                                         <div className="flex items-center gap-3">
                                                                                             <span className="text-[14px] font-black w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center text-primary group-hover/item:bg-primary/5 group-hover/item:text-primary transition-colors">
@@ -418,14 +372,7 @@ export default function ProviderApplicationsPage() {
                                                                                             </span>
                                                                                             <span className="text-[13px] font-black text-gray-400 uppercase tracking-widest group-hover/item:text-gray-600 transition-colors">{item.label}</span>
                                                                                         </div>
-                                                                                        {/* {item.type && (
-                                                                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                                                                                                {item.type}
-                                                                                            </span>
-                                                                                        )} */}
                                                                                     </div>
-
-                                                                                    {/* Media Container */}
                                                                                     <div className="relative">
                                                                                         {item.storage_path ? (
                                                                                             <MediaPreview
@@ -504,12 +451,10 @@ export default function ProviderApplicationsPage() {
                                     </div>
                                 </div>
                             </div>
-                        )
+                        );
                     })}
                 </div>
             )}
-
-            {/* Inline Review Transitioned */}
         </div>
     );
 }

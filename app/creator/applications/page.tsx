@@ -14,6 +14,8 @@ interface Application {
     id: string;
     status: 'pending' | 'accepted' | 'rejected' | 'in_progress' | 'completed';
     created_at: string;
+    initiator: 'creator' | 'provider';
+    request_details: any;
     submitted_post_urls?: string[] | null;
     submitted_deliverables?: {
         label: string;
@@ -21,14 +23,14 @@ interface Application {
         storage_path?: string;
         type?: 'video' | 'image'
     }[] | null;
-    offer: {
+    offer?: {
         title: string;
         category: string;
         deliverables: { type: string; count: number }[];
-        provider: {
-            business_name: string;
-            logo_url: string | null;
-        }
+    };
+    provider: {
+        business_name: string;
+        logo_url: string | null;
     }
 }
 
@@ -58,14 +60,16 @@ export default function CreatorApplicationsPage() {
                     id,
                     status,
                     created_at,
+                    initiator,
+                    request_details,
                     submitted_post_urls,
                     submitted_deliverables,
-                    offer:offers!inner(
+                    offer:offers(
                         title, 
                         category,
-                        deliverables,
-                        provider:providers!inner(business_name, logo_url)
-                    )
+                        deliverables
+                    ),
+                    provider:providers(business_name, logo_url)
                 `)
                 .eq("creator_id", user?.id)
                 .order("created_at", { ascending: false });
@@ -90,12 +94,22 @@ export default function CreatorApplicationsPage() {
             app.submitted_deliverables.forEach(d => {
                 initialData[d.label] = d.storage_path ? { storage_path: d.storage_path, type: d.type } : d.url || "";
             });
-        } else {
+        } else if (app.offer) {
             // Generate empty fields based on offer deliverables
             app.offer.deliverables.forEach(group => {
                 const typeLabel = group.type || 'Deliverable';
                 for (let i = 1; i <= group.count; i++) {
                     const label = group.count > 1 ? `${typeLabel} ${i}` : typeLabel;
+                    initialData[label] = "";
+                }
+            });
+        } else if (app.request_details?.deliverables) {
+            // Generate fields for custom request deliverables
+            app.request_details.deliverables.forEach((item: any) => {
+                const typeLabel = item.type || 'Deliverable';
+                const count = item.quantity || 1;
+                for (let i = 1; i <= count; i++) {
+                    const label = count > 1 ? `${typeLabel} ${i}` : typeLabel;
                     initialData[label] = "";
                 }
             });
@@ -218,15 +232,28 @@ export default function CreatorApplicationsPage() {
             });
 
             // Identify missing deliverables that need to be filled
-            selectedApp.offer.deliverables.forEach(group => {
-                const typeLabel = group.type || 'Deliverable';
-                for (let i = 1; i <= group.count; i++) {
-                    const l = group.count > 1 ? `${typeLabel} ${i}` : typeLabel;
-                    if (!remainingData[l]) {
-                        remainingData[l] = ""; // Initialize empty field
+            if (selectedApp.offer) {
+                selectedApp.offer.deliverables.forEach(group => {
+                    const typeLabel = group.type || 'Deliverable';
+                    for (let i = 1; i <= group.count; i++) {
+                        const l = group.count > 1 ? `${typeLabel} ${i}` : typeLabel;
+                        if (!remainingData[l]) {
+                            remainingData[l] = ""; // Initialize empty field
+                        }
                     }
-                }
-            });
+                });
+            } else if (selectedApp.request_details?.deliverables) {
+                selectedApp.request_details.deliverables.forEach((item: any) => {
+                    const typeLabel = item.type || 'Deliverable';
+                    const count = item.quantity || 1;
+                    for (let i = 1; i <= count; i++) {
+                        const l = count > 1 ? `${typeLabel} ${i}` : typeLabel;
+                        if (!remainingData[l]) {
+                            remainingData[l] = ""; // Initialize empty field
+                        }
+                    }
+                });
+            }
 
             setSubmissionData(remainingData);
 
@@ -290,105 +317,258 @@ export default function CreatorApplicationsPage() {
                     </Link>
                 </div>
             ) : (
-                <div className="space-y-6">
-                    {/* Stable Header Row */}
-                    <div className="hidden lg:grid grid-cols-12 gap-x-4 px-6 pb-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                        <div className="col-span-1"></div>
-                        <div className="col-span-2">Provider</div>
-                        <div className="col-span-3">Offer Details</div>
-                        <div className="col-span-2 text-center">Proof of Work</div>
-                        <div className="col-span-2 text-center">Status</div>
-                        <div className="col-span-2 text-right pr-4">Applied Date</div>
-                    </div>
+                <div className="space-y-12">
+                    {/* 1. NEW: Requests Section (Inbound & Pending Only) */}
+                    {Object.keys(
+                        applications
+                            .filter(app => app.status === 'pending' && app.initiator === 'provider')
+                            .reduce((acc, app) => {
+                                const title = app.offer?.title || app.request_details?.title || "Direct Requests";
+                                if (!acc[title]) acc[title] = [];
+                                acc[title].push(app);
+                                return acc;
+                            }, {} as Record<string, Application[]>)
+                    ).length > 0 && (
+                            <div className="space-y-6">
+                                <div>
+                                    <h2 className="text-xl font-black text-gray-900 tracking-tight">Requests</h2>
+                                    <p className="text-sm text-gray-500 font-medium">Inbound requests awaiting your response</p>
+                                </div>
 
-                    {applications.map((app) => (
-                        <div key={app.id} className="relative group/row">
-                            <div className="bg-gray-50/60 rounded-[2.5rem] border border-transparent transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:bg-white hover:border-gray-200 hover:shadow-xl hover:-translate-y-0.5 overflow-hidden">
-                                <div className="grid grid-cols-12 gap-x-6 items-center p-6 sm:px-2 py-3">
-                                    {/* 1. Logo */}
-                                    <div className="col-span-1 flex justify-center">
-                                        <ProfileImage
-                                            src={app.offer.provider.logo_url}
-                                            name={app.offer.provider.business_name}
-                                            type="provider"
-                                            className="w-14 h-14 ring-2 ring-white shadow-sm"
-                                        />
-                                    </div>
+                                {Object.entries(
+                                    applications
+                                        .filter(app => app.status === 'pending' && app.initiator === 'provider')
+                                        .reduce((acc, app) => {
+                                            const title = app.offer?.title || app.request_details?.title || "Direct Requests";
+                                            if (!acc[title]) acc[title] = [];
+                                            acc[title].push(app);
+                                            return acc;
+                                        }, {} as Record<string, Application[]>)
+                                ).map(([title, apps]) => (
+                                    <div key={title} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+                                        <div className="w-full flex items-center justify-between p-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 bg-primary/5 border border-primary/10">
+                                                    <Building2 className="w-6 h-6 text-primary" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-black text-gray-900">{title}</h3>
+                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{apps.length} {apps.length === 1 ? 'Request' : 'Requests'}</span>
+                                                        <span className="w-1 h-1 rounded-full bg-primary/30" />
+                                                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Action Required</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                    {/* 2. Provider */}
-                                    <div className="col-span-2 min-w-0">
-                                        <p className="text-sm font-bold text-gray-900 truncate" title={app.offer.provider.business_name}>{app.offer.provider.business_name}</p>
-                                        <div className="flex items-center gap-1.5 mt-0.5">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Provider</span>
+                                        <div className="p-6 pt-0">
+                                            <div className="h-px bg-gray-100/60 mb-6" />
+                                            <div className="space-y-3">
+                                                {apps.map((app) => (
+                                                    <div key={app.id} className="relative group/row">
+                                                        <div className="bg-gray-50/60 rounded-[2rem] border border-transparent transition-all duration-300 hover:bg-white hover:border-gray-200 hover:shadow-lg overflow-hidden">
+                                                            <div className="flex flex-col lg:flex-row items-center gap-4 p-4 lg:p-5">
+                                                                {/* Provider Info */}
+                                                                <div className="flex items-center gap-4 w-full lg:w-1/3">
+                                                                    <ProfileImage
+                                                                        src={app.provider?.logo_url}
+                                                                        name={app.provider?.business_name || "Unknown Provider"}
+                                                                        type="provider"
+                                                                        className="w-12 h-12 ring-2 ring-white shadow-sm"
+                                                                    />
+                                                                    <div className="min-w-0 flex-1">
+                                                                        <p className="text-sm font-bold text-gray-900 truncate">{app.provider?.business_name || "Unknown Provider"}</p>
+                                                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sent {formatDate(app.created_at)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Offer/Details */}
+                                                                <div className="w-full lg:w-1/3 border-t lg:border-t-0 pt-3 lg:pt-0 lg:px-4">
+                                                                    <p className="text-xs font-bold text-gray-600 line-clamp-1">
+                                                                        {app.offer?.category || app.request_details?.category || "Collaboration Request"}
+                                                                    </p>
+                                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5 block">
+                                                                        Review details before accepting
+                                                                    </span>
+                                                                </div>
+
+                                                                {/* Actions */}
+                                                                <div className="w-full lg:w-1/3 flex items-center justify-end gap-2 border-t lg:border-t-0 pt-3 lg:pt-0">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="flex-1 lg:flex-none px-4 py-2 bg-white border border-gray-200 text-gray-500 text-[10px] font-black rounded-full hover:bg-red-50 hover:text-red-500 hover:border-red-200 uppercase tracking-wider transition-colors shadow-sm"
+                                                                        onClick={async (e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            try {
+                                                                                const { error } = await supabase.from('applications').update({ status: 'rejected' }).eq('id', app.id);
+                                                                                if (error) throw error;
+                                                                                setApplications(prev => prev.map(a => a.id === app.id ? { ...a, status: 'rejected' } : a));
+                                                                                showToast("Request declined", "success");
+                                                                            } catch (error: any) {
+                                                                                console.error("Decline error:", error);
+                                                                                showToast(error.message || "Failed to decline", "error");
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        Decline
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="flex-1 lg:flex-none px-5 py-2 bg-gray-900 text-white text-[10px] font-black rounded-full shadow-lg hover:bg-black uppercase tracking-wider transition-colors"
+                                                                        onClick={async (e) => {
+                                                                            e.preventDefault();
+                                                                            e.stopPropagation();
+                                                                            try {
+                                                                                const { error } = await supabase.from('applications').update({ status: 'in_progress' }).eq('id', app.id);
+                                                                                if (error) throw error;
+                                                                                setApplications(prev => prev.map(a => a.id === app.id ? { ...a, status: 'in_progress' } : a));
+                                                                                showToast("Request accepted!", "success");
+                                                                            } catch (error: any) {
+                                                                                console.error("Accept error:", error);
+                                                                                showToast(error.message || "Failed to accept", "error");
+                                                                            }
+                                                                        }}
+                                                                    >
+                                                                        Accept Request
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
+                                ))}
+                            </div>
+                        )}
 
-                                    {/* 3. Offer Details */}
-                                    <div className="col-span-3 min-w-0">
-                                        <p className="text-sm font-bold text-gray-900 truncate group-hover/row:text-primary transition-colors" title={app.offer.title}>
-                                            {app.offer.title}
-                                        </p>
-                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5 block">{app.offer.category}</span>
-                                    </div>
+                    {/* 2. EXISTING: Projects Section (Everything Else) */}
+                    <div className="space-y-6">
+                        <div>
+                            <h2 className="text-xl font-black text-gray-900 tracking-tight">Projects</h2>
+                            <p className="text-sm text-gray-500 font-medium">Ongoing and completed collaborations</p>
+                        </div>
 
-                                    {/* 4. Proof of Work (Stable Column) */}
-                                    <div className="col-span-2 flex justify-center">
-                                        {app.status === 'in_progress' ? (
-                                            <button
-                                                onClick={() => handleOpenModal(app)}
-                                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[10px] font-black rounded-full shadow-lg shadow-primary/20 hover:bg-primary/90 hover:-translate-y-0.5 transition-all uppercase tracking-wider active:scale-95"
-                                            >
-                                                <Plus className="w-3.5 h-3.5" />
-                                                Submit Proof
-                                            </button>
-                                        ) : app.submitted_deliverables?.length || app.submitted_post_urls?.length ? (
-                                            <button
-                                                onClick={() => handleOpenModal(app)}
-                                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-100 text-primary text-[10px] font-black rounded-full shadow-sm hover:bg-primary/5 transition-all uppercase tracking-wider group/btn"
-                                            >
-                                                <div className="w-1.5 h-1.5 rounded-full bg-primary group-hover/btn:animate-pulse" />
-                                                View Submission
-                                            </button>
-                                        ) : (
-                                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">
-                                                Not Started
-                                            </span>
-                                        )}
-                                    </div>
+                        <div className="space-y-6">
+                            {/* Stable Header Row - Only show if there are projects */}
+                            {applications.filter(app => !(app.status === 'pending' && app.initiator === 'provider')).length > 0 && (
+                                <div className="hidden lg:grid grid-cols-12 gap-x-4 px-6 pb-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                    <div className="col-span-1"></div>
+                                    <div className="col-span-2">Provider</div>
+                                    <div className="col-span-3">Offer Details</div>
+                                    <div className="col-span-2 text-center">Proof of Work</div>
+                                    <div className="col-span-2 text-center">Status</div>
+                                    <div className="col-span-2 text-right pr-4">Applied Date</div>
+                                </div>
+                            )}
 
-                                    {/* 5. Status */}
-                                    <div className="col-span-2 flex justify-center">
-                                        <div className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.15em] flex items-center gap-2 border shadow-sm transition-all duration-300
+                            {applications.filter(app => !(app.status === 'pending' && app.initiator === 'provider')).map((app) => (
+                                <div key={app.id} className="relative group/row">
+                                    <div className="bg-gray-50/60 rounded-[2.5rem] border border-transparent transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] hover:bg-white hover:border-gray-200 hover:shadow-xl hover:-translate-y-0.5 overflow-hidden">
+                                        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-y-6 lg:gap-x-6 items-center p-6 lg:px-2 py-4 lg:py-3">
+                                            {/* 1. Logo & Provider (Grouped on mobile) */}
+                                            <div className="lg:col-span-3 flex lg:contents items-center gap-4 w-full">
+                                                <div className="lg:col-span-1 flex justify-center shrink-0">
+                                                    <ProfileImage
+                                                        src={app.provider?.logo_url}
+                                                        name={app.provider?.business_name || "Unknown Provider"}
+                                                        type="provider"
+                                                        className="w-14 h-14 ring-2 ring-white shadow-sm"
+                                                    />
+                                                </div>
+
+                                                <div className="lg:col-span-2 min-w-0 flex-1">
+                                                    <p className="text-sm font-bold text-gray-900 truncate" title={app.provider?.business_name}>{app.provider?.business_name || "Unknown Provider"}</p>
+                                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
+                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Provider</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* 2. Offer Details */}
+                                            <div className="lg:col-span-3 min-w-0 w-full border-t lg:border-t-0 pt-4 lg:pt-0">
+                                                <p className="text-sm font-bold text-gray-900 truncate group-hover/row:text-primary transition-colors" title={app.offer?.title || app.request_details?.title}>
+                                                    {app.offer?.title || app.request_details?.title || "Project Request"}
+                                                </p>
+                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5 block">
+                                                    {app.offer?.category || "Direct Request"}
+                                                </span>
+                                            </div>
+
+                                            {/* 3. Proof of Work / Status Actions */}
+                                            <div className="lg:col-span-2 flex justify-start lg:justify-center w-full">
+                                                {app.status === 'in_progress' ? (
+                                                    <button
+                                                        onClick={() => handleOpenModal(app)}
+                                                        className="w-full lg:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white text-[10px] font-black rounded-full shadow-lg shadow-primary/20 hover:bg-primary/90 hover:-translate-y-0.5 transition-all uppercase tracking-wider active:scale-95"
+                                                    >
+                                                        <Plus className="w-3.5 h-3.5" />
+                                                        Submit Proof
+                                                    </button>
+                                                ) : app.submitted_deliverables?.length || app.submitted_post_urls?.length ? (
+                                                    <button
+                                                        onClick={() => handleOpenModal(app)}
+                                                        className="w-full lg:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-gray-100 text-primary text-[10px] font-black rounded-full shadow-sm hover:bg-primary/5 transition-all uppercase tracking-wider group/btn"
+                                                    >
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-primary group-hover/btn:animate-pulse" />
+                                                        View Submission
+                                                    </button>
+                                                ) : (
+                                                    <div className="flex items-center gap-2 lg:contents">
+                                                        <span className="lg:hidden text-[10px] font-black text-gray-400 uppercase tracking-widest">Deliverables:</span>
+                                                        <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic">
+                                                            {app.status === 'pending' ? 'Pending Acceptance' : 'Not Started'}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* 4. Status Badge */}
+                                            <div className="lg:col-span-2 flex justify-start lg:justify-center w-full">
+                                                <div className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.15em] flex items-center justify-center gap-2 border shadow-sm transition-all duration-300 w-full lg:w-auto
                                             ${app.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                app.status === 'in_progress' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                                                    app.status === 'completed' ? 'bg-primary/5 text-primary border-primary/10' :
-                                                        app.status === 'pending' ? 'bg-gray-50 text-gray-500 border-gray-100' :
-                                                            'bg-red-50 text-red-500 border-red-100'}
+                                                        app.status === 'in_progress' ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                                                            app.status === 'completed' ? 'bg-primary/5 text-primary border-primary/10' :
+                                                                app.status === 'pending' ? 'bg-gray-50 text-gray-500 border-gray-100' :
+                                                                    'bg-red-50 text-red-500 border-red-100'}
                                         `}>
-                                            {app.status === 'accepted' ? <CheckCircle2 className="w-3 h-3" /> :
-                                                app.status === 'in_progress' ? <Loader2 className="w-3 h-3 animate-spin" /> :
-                                                    app.status === 'completed' ? <CheckCircle2 className="w-3 h-3" /> :
-                                                        app.status === 'pending' ? <Clock className="w-3 h-3" /> :
-                                                            <XCircle className="w-3 h-3" />}
-                                            {app.status === 'in_progress' ? 'In Progress' : app.status}
-                                        </div>
-                                    </div>
+                                                    {app.status === 'accepted' ? <CheckCircle2 className="w-3 h-3" /> :
+                                                        app.status === 'in_progress' ? <Loader2 className="w-3 h-3 animate-spin" /> :
+                                                            app.status === 'completed' ? <CheckCircle2 className="w-3 h-3" /> :
+                                                                app.status === 'pending' ? <Clock className="w-3 h-3" /> :
+                                                                    <XCircle className="w-3 h-3" />}
+                                                    {app.status === 'in_progress' ? 'In Progress' : app.status === 'pending' ? 'Applied' : app.status}
+                                                </div>
+                                            </div>
 
-                                    {/* 6. Applied Date */}
-                                    <div className="col-span-2 text-right mr-7">
-                                        <p className="text-sm font-bold text-gray-900">{formatDate(app.created_at)}</p>
-                                        <div className="flex items-center justify-end gap-1.5 mt-0.5">
-                                            <Calendar className="w-3 h-3 text-gray-300" />
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                                {app.status === 'accepted' ? 'Confirmed' : 'Applied'}
-                                            </span>
+                                            {/* 5. Applied Date */}
+                                            <div className="lg:col-span-2 flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center w-full lg:text-right lg:mr-7">
+                                                <p className="text-sm font-bold text-gray-900">{formatDate(app.created_at)}</p>
+                                                <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                                                    <Calendar className="w-3 h-3 text-gray-300" />
+                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                        {app.status === 'accepted' ? 'Confirmed' : 'Applied'}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            ))}
+
+                            {applications.filter(app => !(app.status === 'pending' && app.initiator === 'provider')).length === 0 && (
+                                <div className="text-center py-12 bg-gray-50/50 rounded-3xl border border-gray-100/50 border-dashed">
+                                    <p className="text-sm text-gray-400 font-medium">No active or completed projects.</p>
+                                </div>
+                            )}
                         </div>
-                    ))}
+                    </div>
                 </div>
             )}
 

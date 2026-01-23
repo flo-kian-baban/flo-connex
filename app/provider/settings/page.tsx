@@ -82,9 +82,17 @@ export default function ProviderSettingsPage() {
                         showToast("Could not load provider profile.", "error");
                     }
                 } else if (data) {
+                    // Get data from DB
+                    const dbName = data.business_name;
+                    const dbLogo = data.logo_url;
+
+                    // Get fallbacks from metadata
+                    const metaName = user?.user_metadata?.full_name || user?.user_metadata?.name || "";
+                    const metaAvatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || "";
+
                     setFormData({
                         id: data.id,
-                        business_name: data.business_name || "",
+                        business_name: dbName || metaName,
                         category: data.category || "",
                         tagline: data.tagline || "",
                         brand_description: data.brand_description || "",
@@ -93,7 +101,7 @@ export default function ProviderSettingsPage() {
                         instagram_handle: data.instagram_handle || "",
                         phone_number: data.phone_number || "",
                         email: data.email || "",
-                        logo_url: data.logo_url || "",
+                        logo_url: dbLogo || metaAvatar,
                         service_areas: data.service_areas || [],
                         years_in_business: data.years_in_business,
                         google_rating: data.google_rating,

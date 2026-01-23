@@ -2,12 +2,13 @@
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import DashboardShell, { NavItem } from "@/components/dashboard/layout/DashboardShell";
-import { LayoutGrid, FileText, MessageSquare, Settings } from "lucide-react";
+import { LayoutGrid, FileText, MessageSquare, Settings, Search } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const PROVIDER_NAV_ITEMS: NavItem[] = [
+    { label: "Explore Creators", href: "/provider/explore", icon: Search },
     { label: "My Offers", href: "/provider/offers", icon: LayoutGrid },
     { label: "Applications", href: "/provider/applications", icon: FileText },
     { label: "Chats", href: "/chats", icon: MessageSquare },

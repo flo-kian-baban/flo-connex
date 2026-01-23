@@ -39,44 +39,38 @@ export default function Showcase() {
             <div className="max-w-7xl mx-auto px-4 md:px-8">
 
                 {/* Header */}
-                <div className="flex justify-between items-end mb-12">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
                     <div>
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Recent Exchanges</h2>
                         <p className="text-gray-500">Real experiences unlocked by Connex creators.</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                         <button
                             onClick={scrollPrev}
-                            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-white hover:shadow-md transition-all text-gray-600 active:scale-95 disabled:opacity-50"
+                            className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center bg-white hover:shadow-md transition-all text-gray-600 active:scale-95 disabled:opacity-50"
                         >
-                            <ArrowLeft size={20} />
+                            <ArrowLeft size={22} />
                         </button>
                         <button
                             onClick={scrollNext}
-                            className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center hover:bg-gray-800 shadow-md transition-all active:scale-95 disabled:opacity-50"
+                            className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center hover:bg-gray-800 shadow-md transition-all active:scale-95 disabled:opacity-50"
                         >
-                            <ArrowRight size={20} />
+                            <ArrowRight size={22} />
                         </button>
                     </div>
                 </div>
 
-                {/* Carousel Window */}
                 <div className="relative w-full overflow-hidden">
                     <div
-                        className="flex gap-6 transition-transform duration-500 ease-in-out"
-                        style={{ transform: `translateX(-${currentIndex * (100 / 3)}%)` }}
-                    // Note: logic implies 3 items visible. 100% / 3 is roughly the slide amount. 
-                    // But gap makes it tricky with percentage.
-                    // Better approach: use `calc` in transform or strictly control width.
-                    // Let's rely on standard grid behavior inside a flex layout or simpler:
-                    // Move by pixels or simpler % if we assume items are exactly 1/3 width (minus gap).
-                    // To be precise with gaps, it's better to translate by (100% + gap) / 3 but simpler is:
-                    // Just make each item min-w-[calc(33.333%_-_16px)] (assuming gap-6 is 24px)
+                        className="flex gap-4 md:gap-6 transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                        style={{
+                            transform: `translateX(calc(-${currentIndex} * (100% + ${typeof window !== 'undefined' && window.innerWidth < 768 ? '16px' : '24px'})))`
+                        }}
                     >
                         {allShowcases.map((item, idx) => (
                             <div
                                 key={`${item.id}-${idx}`}
-                                className="relative shrink-0 w-full md:w-[calc(33.333%-16px)] aspect-[9/16] rounded-3xl overflow-hidden group cursor-pointer shadow-lg select-none"
+                                className="relative shrink-0 w-[calc(100%-16px)] md:w-[calc(33.333%-16px)] aspect-[9/16] rounded-3xl overflow-hidden group cursor-pointer shadow-lg select-none"
                             >
                                 <Image
                                     src={item.imageUrl}
@@ -102,6 +96,6 @@ export default function Showcase() {
                 </div>
 
             </div>
-        </section>
+        </section >
     );
 }

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         // Check if user is the creator of the application
         const { data: application, error: appError } = await supabaseAdmin
             .from('applications')
-            .select('creator_id, offer_id')
+            .select('creator_id, offer_id, provider_id')
             .eq('id', application_id)
             .single();
 
@@ -40,24 +40,39 @@ export async function POST(req: NextRequest) {
 
         const isCreator = application.creator_id === user.id;
 
-        // Check if user is the provider of the offer
+        // Check if user is the provider of the offer OR the direct provider of the application
         let isProvider = false;
         if (!isCreator) {
-            const { data: offer, error: offerError } = await supabaseAdmin
-                .from('offers')
-                .select('provider_id')
-                .eq('id', application.offer_id)
-                .single();
-
-            if (!offerError && offer) {
+            // 1. Try to check via provider_id directly on the application (Direct Requests & New Apps)
+            if (application.provider_id) {
                 const { data: provider, error: providerError } = await supabaseAdmin
                     .from('providers')
                     .select('id')
-                    .eq('id', offer.provider_id)
+                    .eq('id', application.provider_id)
                     .eq('claimed_by_user_id', user.id)
                     .single();
 
                 isProvider = !providerError && !!provider;
+            }
+
+            // 2. Fallback: Check via Offer lookup (for legacy apps or redundancy)
+            if (!isProvider && application.offer_id) {
+                const { data: offer, error: offerError } = await supabaseAdmin
+                    .from('offers')
+                    .select('provider_id')
+                    .eq('id', application.offer_id)
+                    .single();
+
+                if (!offerError && offer) {
+                    const { data: provider, error: providerError } = await supabaseAdmin
+                        .from('providers')
+                        .select('id')
+                        .eq('id', offer.provider_id)
+                        .eq('claimed_by_user_id', user.id)
+                        .single();
+
+                    isProvider = !providerError && !!provider;
+                }
             }
         }
 

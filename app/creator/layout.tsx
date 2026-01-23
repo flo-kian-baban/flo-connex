@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Loader2, Compass, ClipboardCheck, MessageSquare, User } from "lucide-react";
 import DashboardShell, { NavItem } from "@/components/dashboard/layout/DashboardShell";
 import { supabase } from "@/lib/supabase";
+import { AuthCallbackToast } from "@/components/auth/AuthCallbackToast";
 
 const CREATOR_NAV_ITEMS: NavItem[] = [
     { label: "Explore", href: "/creator/offers", icon: Compass },
@@ -48,6 +49,7 @@ export default function CreatorLayout({
             profile={profile}
             userId={user?.id}
         >
+            <AuthCallbackToast />
             {children}
         </DashboardShell>
     );

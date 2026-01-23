@@ -124,15 +124,15 @@ export default function HowItWorks() {
                 </div>
 
                 {/* Mobile View (Standard Stack) */}
-                <div className="lg:hidden py-12 space-y-12">
+                <div className="lg:hidden py-12 space-y-16">
                     {steps.map((step, idx) => (
-                        <div key={step.num} className="space-y-6">
-                            <div className="p-6 rounded-3xl border border-[#FF4D22]/20 bg-[#FF4D22]/5">
-                                <span className="text-sm font-bold tracking-wider uppercase text-[#FF4D22] mb-2 block">Step {step.num}</span>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-2">{step.title}</h3>
-                                <p className="text-gray-600">{step.desc}</p>
+                        <div key={step.num} className="space-y-8 flex flex-col items-center text-center">
+                            <div className="p-8 rounded-3xl border border-[#FF4D22]/20 bg-[#FF4D22]/5 w-full">
+                                <span className="text-sm font-bold tracking-wider uppercase text-[#FF4D22] mb-3 block">Step {step.num}</span>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-3">{step.title}</h3>
+                                <p className="text-gray-600 leading-relaxed">{step.desc}</p>
                             </div>
-                            <div className="relative w-full aspect-video bg-gray-900 rounded-3xl overflow-hidden shadow-lg">
+                            <div className="relative w-full aspect-[9/16] max-w-[300px] bg-gray-900 rounded-3xl overflow-hidden shadow-xl">
                                 <Image
                                     src={step.videoUrl || ""}
                                     alt={step.title}
@@ -140,8 +140,8 @@ export default function HowItWorks() {
                                     className="object-cover"
                                 />
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-full flex items-center justify-center border border-white/30">
-                                        <Play className="w-5 h-5 text-white fill-white ml-1" />
+                                    <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 shadow-lg">
+                                        <Play className="w-6 h-6 text-white fill-white ml-1" />
                                     </div>
                                 </div>
                             </div>

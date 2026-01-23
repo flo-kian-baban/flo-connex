@@ -4,7 +4,7 @@ import { ShieldCheck, Zap, MessageCircle } from "lucide-react";
 
 export default function FeaturesOrbit() {
     return (
-        <section className="py-24 md:py-8">
+        <section className="py-24 md:py-8 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 md:px-8">
 
                 {/* Header */}
@@ -64,8 +64,8 @@ export default function FeaturesOrbit() {
                     </div>
 
                     {/* 2. Tall Feature (Verified) - Spans 2 cols, 2 rows */}
-                    <div className="md:col-span-2 md:row-span-2 bg-gray-900 rounded-[2rem] p-8 md:p-10 border border-gray-800 shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
-                        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/20 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2" />
+                    <div className="md:col-span-2 md:row-span-2 bg-gray-900 rounded-[2rem] p-8 md:p-10 border border-gray-800 shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden group flex flex-col justify-between min-h-[400px]">
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/20 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
                         <div className="relative z-10">
                             <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-white mb-6 backdrop-blur-md">

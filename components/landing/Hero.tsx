@@ -16,9 +16,9 @@ export default function Hero() {
                 </div>
 
                 {/* Heading */}
-                <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-gray-900 mb-10 text-balance">
+                <h1 className="text-3xl sm:text-4xl md:text-7xl font-bold tracking-tight text-gray-900 mb-6 md:mb-10 text-balance leading-[1.1]">
                     YOUR CONTENT. <br className="hidden md:block" />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-600">REAL EXPERIENCES.</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-600 uppercase">Real Experiences.</span>
                 </h1>
 
                 {/* Subtext */}
@@ -40,8 +40,7 @@ export default function Hero() {
 
                     <div className="hidden md:block w-px h-8 bg-gray-200 self-center" />
 
-                    {/* Input 2 */}
-                    <div className="flex-1 flex items-center px-4 h-12 md:h-14 bg-gray-50 rounded-2xl md:bg-transparent">
+                    <div className="flex-1 flex items-center px-4 h-12 md:h-14 bg-gray-50/50 rounded-2xl md:bg-transparent">
                         <MapPin className="text-gray-400 w-5 h-5 mr-3 shrink-0" />
                         <input
                             type="text"

@@ -110,6 +110,8 @@ export default function OfferDetailPage() {
                 .insert({
                     offer_id: id,
                     creator_id: user.id,
+                    provider_id: offer?.provider_id,
+                    initiator: 'creator',
                     status: 'pending'
                 });
 
@@ -158,20 +160,20 @@ export default function OfferDetailPage() {
     if (!offer) return null;
 
     return (
-        <div className="max-w-3xl mx-auto pb-20 px-4 sm:px-6 relative">
+        <div className="max-w-3xl mx-auto pb-24 px-4 sm:px-4 relative">
             {/* Sticky CTA Bar */}
-            <div className={`fixed bottom-0 left-0 right-0 z-50 p-4 transition-all duration-500 transform ${showStickyCTA ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'}`}>
-                <div className="max-w-2xl mx-auto bg-white/90 backdrop-blur-xl border border-gray-100 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] rounded-[32px] p-3 md:p-4 flex items-center justify-between gap-4">
+            <div className={`fixed bottom-0 left-0 right-0 md:left-24 lg:left-72 z-50 p-4 transition-all duration-500 transform ${showStickyCTA ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'}`}>
+                <div className="max-w-3xl mx-auto bg-white/90 backdrop-blur-xl border border-gray-100 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] rounded-[32px] p-3 md:p-4 flex items-center justify-between gap-4">
                     <div className="hidden md:flex items-center gap-3 pl-4">
                         <ProfileImage
                             src={offer.providers.logo_url}
                             name={offer.providers.business_name}
                             type="provider"
-                            size="sm"
+                            size="lg"
                         />
-                        <div className="space-y-0.5">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 leading-none">Apply to</p>
-                            <p className="text-sm font-bold text-gray-900 leading-none">{offer.title}</p>
+                        <div className="space-y-1">
+                            <p className="text-[11px] font-black uppercase tracking-widest text-gray-400 leading-none">Apply to</p>
+                            <p className="text-md font-bold text-gray-900 leading-none">{offer.title}</p>
                         </div>
                     </div>
 

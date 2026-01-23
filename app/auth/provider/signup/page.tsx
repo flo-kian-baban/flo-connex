@@ -19,6 +19,16 @@ export default function ProviderSignupPage() {
                 </Link>
             </div>
 
+            <div className="w-full text-center mb-8 md:hidden">
+                <Link
+                    href="/"
+                    className="inline-flex items-center gap-2 text-gray-500 text-sm"
+                >
+                    <MoveLeft className="w-4 h-4" />
+                    Back to Home
+                </Link>
+            </div>
+
             <ProviderAuthForm type="signup" />
 
             <div className="mt-8 text-center text-sm text-gray-400">

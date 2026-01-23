@@ -16,7 +16,8 @@ interface AuthContextType {
     userType: 'provider' | 'creator' | null;
     profile: UserProfile | null;
     loading: boolean;
-    signInWithGoogle: () => Promise<void>;
+    signInWithGoogle: (role?: 'provider' | 'creator') => Promise<void>;
+    signInWithFacebook: (role?: 'provider' | 'creator') => Promise<void>;
     logout: () => Promise<void>;
 }
 
@@ -26,7 +27,8 @@ const AuthContext = createContext<AuthContextType>({
     userType: null,
     profile: null,
     loading: true,
-    signInWithGoogle: async () => { },
+    signInWithGoogle: async (_role?: 'provider' | 'creator') => { },
+    signInWithFacebook: async (_role?: 'provider' | 'creator') => { },
     logout: async () => { },
 });
 
@@ -133,17 +135,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
     }, [handleAuthChange]);
 
-    const signInWithGoogle = async () => {
+    const signInWithGoogle = async (role: 'provider' | 'creator' = 'creator') => {
         try {
+            // Build redirect URL with role parameter
+            const redirectUrl = new URL(`${window.location.origin}/auth/callback`);
+            redirectUrl.searchParams.set('role', role);
+            // Set default redirect path based on role
+            redirectUrl.searchParams.set('next', role === 'provider' ? '/provider/offers' : '/creator/offers');
+
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo: redirectUrl.toString(),
                 }
             });
             if (error) throw error;
         } catch (error) {
             console.error("Error signing in with Google", error);
+            throw error;
+        }
+    };
+
+    const signInWithFacebook = async (role: 'provider' | 'creator' = 'creator') => {
+        try {
+            // Build redirect URL with role parameter
+            const redirectUrl = new URL(`${window.location.origin}/auth/callback`);
+            redirectUrl.searchParams.set('role', role);
+            // Set default redirect path based on role
+            redirectUrl.searchParams.set('next', role === 'provider' ? '/provider/offers' : '/creator/offers');
+
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'facebook',
+                options: {
+                    redirectTo: redirectUrl.toString(),
+                }
+            });
+            if (error) throw error;
+        } catch (error) {
+            console.error("Error signing in with Facebook", error);
             throw error;
         }
     };
@@ -163,7 +192,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, userType, profile, loading, signInWithGoogle, logout }}>
+        <AuthContext.Provider value={{ user, session, userType, profile, loading, signInWithGoogle, signInWithFacebook, logout }}>
             {children}
         </AuthContext.Provider>
     );

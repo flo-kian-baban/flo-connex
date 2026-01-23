@@ -11,15 +11,15 @@ export default function FAQ() {
     };
 
     return (
-        <section className="py-24 bg-white">
+        <section className="py-16 md:py-24 bg-white">
             <div className="max-w-4xl mx-auto px-4 md:px-8">
 
                 {/* Header */}
-                <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                <div className="text-center mb-12 md:mb-16">
+                    <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
                         Questions? We've got answers.
                     </h2>
-                    <p className="text-lg text-gray-600">
+                    <p className="text-md md:text-lg text-gray-600">
                         Everything you need to know about joining Connex.
                     </p>
                 </div>
