@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
     try {
@@ -25,6 +27,8 @@ export async function POST(req: NextRequest) {
         if (authError || !user) {
             return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
         }
+
+        const supabaseAdmin = getSupabaseAdmin();
 
         // Check if user is the creator of the application
         const { data: application, error: appError } = await supabaseAdmin
