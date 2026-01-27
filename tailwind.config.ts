@@ -39,6 +39,6 @@ const config: Config = {
             "toast-in": "toast-in 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
         },
     },
-    plugins: [],
+    plugins: [require("tailwindcss-animate")],
 };
 export default config;

@@ -10,9 +10,9 @@ import FAQ from "@/components/creators/FAQ";
 import FinalCTA from "@/components/creators/FinalCTA";
 import Footer from "@/components/creators/Footer";
 
-export default function Home() {
+export default function CreatorLandingPage() {
     return (
-        <main className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white selection:bg-primary/20 selection:text-primary">
             <Navbar />
             <Hero />
             <LogoBand />
@@ -24,7 +24,6 @@ export default function Home() {
             <FAQ />
             <FinalCTA />
             <Footer />
-        </main>
+        </div>
     );
 }
-

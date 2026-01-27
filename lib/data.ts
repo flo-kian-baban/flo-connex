@@ -141,25 +141,47 @@ export const logos = [
     { id: "l-6", name: "NextGen" },
 ];
 
-// HOW IT WORKS
+// HOW IT WORKS - CREATORS
 export const steps = [
     {
         num: "01",
-        title: "Explore Services",
-        desc: "Browse premium offers from businesses looking for content.",
-        videoUrl: "https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?q=80&w=600&auto=format&fit=crop", // Gym/Active
+        title: "Connect",
+        desc: "Build your profile and apply to offers that match your niche and style.",
+        videoUrl: "https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?q=80&w=600&auto=format&fit=crop",
     },
     {
         num: "02",
-        title: "Apply",
-        desc: "Request services you actually want and share your vision.",
-        videoUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=600&auto=format&fit=crop", // Skincare/Spa
+        title: "Create",
+        desc: "Receive clear deliverables and create content that works for both you and the brand.",
+        videoUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=600&auto=format&fit=crop",
     },
     {
         num: "03",
-        title: "Create & Exchange",
-        desc: "Get the experience, create the content, and share the value.",
-        videoUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=600&auto=format&fit=crop", // Camera/Shooting
+        title: "Exchange",
+        desc: "Get paid or receive experiences without chasing invoices or managing admin.",
+        videoUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=600&auto=format&fit=crop",
+    },
+];
+
+// HOW IT WORKS - BUSINESS
+export const businessSteps = [
+    {
+        num: "01",
+        title: "Post an Offer",
+        desc: "Describe what you need. Set your budget and deliverables in minutes.",
+        videoUrl: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=600&auto=format&fit=crop", // Business/Laptop
+    },
+    {
+        num: "02",
+        title: "Review Creators",
+        desc: "See real profiles and portfolios. Approve only the creators who fit your brand.",
+        videoUrl: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=600&auto=format&fit=crop", // Reviewing/Meeting
+    },
+    {
+        num: "03",
+        title: "Get Results",
+        desc: "Receive authentic content ready to post. Track ROI directly in your dashboard.",
+        videoUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop", // Analytics/Growth
     },
 ];
 
