@@ -88,14 +88,14 @@ export default function TopEarners() {
     };
 
     return (
-        <section className="relative py-24 md:py-32 overflow-hidden bg-gray-50/30">
+        <section className="relative py-16 md:py-32 overflow-hidden bg-gray-50/30">
             <AtmosphericBackground variant="features" />
 
             <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">
                 {/* Header */}
-                <div className="text-center mb-16">
+                <div className="text-center mb-10 md:mb-16">
                     <ScrollReveal>
-                        <h2 className="text-4xl md:text-7xl font-bold mb-8 tracking-tight text-gray-900 leading-[1.1]">
+                        <h2 className="text-3xl md:text-7xl font-bold mb-4 md:mb-8 tracking-tight text-gray-900 leading-[1.1]">
                             Top <span className="text-gray-400">Earners.</span>
                         </h2>
                     </ScrollReveal>
@@ -103,7 +103,7 @@ export default function TopEarners() {
 
                 {/* Tabs */}
                 <ScrollReveal delay={100}>
-                    <div className="flex justify-start md:justify-center mb-16 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 md:mx-0">
+                    <div className="flex justify-start md:justify-center mb-10 md:mb-16 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] -mx-4 px-4 md:mx-0">
                         <div className="flex gap-3 md:gap-4 whitespace-nowrap">
                             {INDUSTRIES.map((industry) => {
                                 const isActive = activeTab === industry;

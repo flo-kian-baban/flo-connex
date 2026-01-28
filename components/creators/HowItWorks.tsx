@@ -41,12 +41,12 @@ export default function HowItWorks() {
     const [hoveredStep, setHoveredStep] = useState<number | null>(null);
 
     return (
-        <section className="relative py-24 md:py-32 overflow-hidden bg-white">
+        <section className="relative py-16 md:py-32 overflow-hidden bg-white">
             <AtmosphericBackground variant="how-it-works" />
 
-            <div className="max-w-7xl mx-auto px-4 md:px-8 mb-16 md:mb-20 text-center relative z-10">
+            <div className="max-w-7xl mx-auto px-4 md:px-8 mb-12 md:mb-20 text-center relative z-10">
                 <ScrollReveal>
-                    <h2 className="text-4xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 leading-[1.1]">
+                    <h2 className="text-3xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 leading-[1.1]">
                         How it <span className="text-gray-400">works.</span>
                     </h2>
                 </ScrollReveal>

@@ -42,7 +42,7 @@ export default function EarningsCalculator({ cpm = 3.00 }: EarningsCalculatorPro
     ];
 
     return (
-        <section className="relative py-24 md:py-32 overflow-hidden bg-white">
+        <section className="relative py-16 md:py-32 overflow-hidden bg-white">
             <AtmosphericBackground variant="features" />
 
             <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10">

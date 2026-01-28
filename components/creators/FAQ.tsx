@@ -13,13 +13,13 @@ export default function FAQ() {
     };
 
     return (
-        <section className="py-24 md:py-32 bg-white">
+        <section className="py-16 md:py-32 bg-white">
             <div className="max-w-7xl mx-auto px-4 md:px-8">
 
                 {/* Header */}
-                <div className="text-center mb-16 md:mb-24">
+                <div className="text-center mb-12 md:mb-24">
                     <ScrollReveal>
-                        <h2 className="text-4xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 leading-[1.1]">
+                        <h2 className="text-3xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 leading-[1.1]">
                             Questions? <span className="text-gray-400">We've got answers.</span>
                         </h2>
                     </ScrollReveal>

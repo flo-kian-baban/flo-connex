@@ -45,13 +45,13 @@ export default function BentoTestimonials() {
     const content = CREATOR_CONTENT;
 
     return (
-        <section className="relative py-24 md:py-32 overflow-hidden bg-gray-50/50">
+        <section className="relative py-16 md:py-32 overflow-hidden bg-gray-50/50">
             <AtmosphericBackground variant="showcase" />
 
             <div className="max-w-7xl mx-auto px-4 md:px-8">
                 <ScrollReveal>
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 leading-[1.1]">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 leading-[1.1]">
                             Loved by <span className="text-gray-400">Creators.</span>
                         </h2>
                         <p className="text-lg max-w-2xl mx-auto text-gray-500">

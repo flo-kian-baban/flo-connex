@@ -27,10 +27,10 @@ export default function Hero({
     onCtaClick
 }: HeroProps) {
     return (
-        <section className="relative h-[100vh] pt-26 md:pt-48 pb-24 md:pb-32 overflow-hidden">
+        <section className="relative min-h-[90vh] md:h-[100vh] pt-48 md:pt-48 pb-16 md:pb-32 overflow-hidden">
             <AtmosphericBackground variant="hero" />
 
-            <div className="max-w-5xl mx-auto px-4 md:px-8 text-center flex flex-col items-center">
+            <div className="max-w-4xl mx-auto px-4 md:px-8 text-center flex flex-col items-center">
 
                 {/* Pill Label */}
                 <ScrollReveal delay={100}>
@@ -49,7 +49,7 @@ export default function Hero({
 
                 {/* Subtext - Light Theme */}
                 <ScrollReveal delay={300}>
-                    <p className="text-lg md:text-xl max-w-2xl mb-12 md:mb-16 leading-relaxed text-gray-500">
+                    <p className="text-lg md:text-xl max-w-2xl mb-12 md:mb-16 leading-relaxed text-gray-500 font-medium">
                         {description}
                     </p>
                 </ScrollReveal>
@@ -57,32 +57,32 @@ export default function Hero({
                 {/* Search Bar or CTA */}
                 <ScrollReveal delay={400} distance="30px">
                     {showSearch ? (
-                        <div className="w-full max-w-3xl bg-white p-2.5 rounded-3xl shadow-xl border border-gray-100 flex flex-col md:flex-row gap-2.5 hover:shadow-2xl transition-shadow duration-500">
+                        <div className="w-full max-w-3xl bg-white p-4 md:p-2.5 rounded-[2.5rem] md:rounded-3xl shadow-2xl border border-gray-100 flex flex-col md:flex-row gap-4 md:gap-2.5 hover:shadow-2xl transition-shadow duration-500">
                             {/* Input 1 */}
-                            <div className="flex-1 flex items-center px-4 h-12 md:h-14 bg-gray-50 rounded-2xl md:bg-transparent">
-                                <Search className="text-gray-400 w-5 h-5 mr-3 shrink-0" />
+                            <div className="flex-1 flex items-center px-4 md:px-5 h-24 md:h-14 bg-gray-50 rounded-2xl md:bg-transparent border border-gray-100 md:border-none focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+                                <Search className="text-primary w-7 h-7 md:w-5 md:h-5 mr-3 shrink-0" />
                                 <input
                                     type="text"
                                     placeholder="Service (e.g. Gym, Facial...)"
-                                    className="w-full bg-transparent outline-none text-gray-900 placeholder:text-gray-400 font-medium"
+                                    className="w-full bg-transparent outline-none text-gray-900 placeholder:text-gray-400 font-bold text-xl md:text-base"
                                 />
                             </div>
 
                             <div className="hidden md:block w-px h-8 bg-gray-200 self-center" />
 
-                            <div className="flex-1 flex items-center px-4 h-12 md:h-14 bg-gray-50/50 rounded-2xl md:bg-transparent">
-                                <MapPin className="text-gray-400 w-5 h-5 mr-3 shrink-0" />
+                            <div className="flex-1 flex items-center px-4 md:px-5 h-24 md:h-14 bg-gray-50 rounded-2xl md:bg-transparent border border-gray-100 md:border-none focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+                                <MapPin className="text-primary w-7 h-7 md:w-5 md:h-5 mr-3 shrink-0" />
                                 <input
                                     type="text"
                                     placeholder="Your Location"
-                                    className="w-full bg-transparent outline-none text-gray-900 placeholder:text-gray-400 font-medium"
+                                    className="w-full bg-transparent outline-none text-gray-900 placeholder:text-gray-400 font-bold text-xl md:text-base"
                                 />
                             </div>
 
                             {/* Button */}
                             <button
                                 onClick={onCtaClick || (() => window.location.href = ctaLink)}
-                                className="h-12 md:h-auto px-10 bg-primary hover:bg-primary-hover text-white font-bold rounded-2xl transition-all shadow-md active:scale-[0.98] whitespace-nowrap"
+                                className="h-24 md:h-auto px-10 bg-primary hover:bg-primary-hover text-white font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-primary/20 active:scale-[0.98] whitespace-nowrap text-lg md:text-sm"
                             >
                                 {ctaText}
                             </button>

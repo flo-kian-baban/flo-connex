@@ -4,7 +4,7 @@ import { logos } from "@/lib/data";
 
 export default function LogoBand() {
     return (
-        <section className="py-24 md:py-32 overflow-hidden bg-white">
+        <section className="py-16 md:py-32 overflow-hidden bg-white">
             <div className="max-w-7xl mx-auto px-4 md:px-8">
                 <p className="text-center text-sm font-bold uppercase tracking-[0.2em] mb-12 text-gray-600">
                     Trusted by Premium Brands
